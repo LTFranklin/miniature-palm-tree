@@ -1,0 +1,4 @@
+﻿  SudokuPuzzle.cpp
+x:\users\nargacuga\documents\visual studio 2017\projects\apcoursework\sudoku\sudoku\sudokupuzzle.cpp(46): warning C4101: 'puzzle': unreferenced local variable
+  Sudoku.vcxproj -> X:\Users\Nargacuga\Documents\Visual Studio 2017\Projects\Sudoku\Debug\Sudoku.exe
+  Sudoku.vcxproj -> X:\Users\Nargacuga\Documents\Visual Studio 2017\Projects\Sudoku\Debug\Sudoku.pdb (Partial PDB)
