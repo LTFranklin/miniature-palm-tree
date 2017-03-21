@@ -16,13 +16,16 @@ public:
 	~SudokuPuzzle(void);
 
 	void Solve(char filenameIn[]);
-	void CreateGrids();
-	//should probably rename. Does the bulk of the solving
-	bool Work(CellGroup group);
+
+
+
 
 private:
 	void Output(PuzzleGrid grid) const;
 	void PrintGrid(PuzzleGrid grid) const;
+	//should probably rename. Does the bulk of the solving (consider splitting into naked and hidden?)
+	bool Work(CellGroup group);
+	void CreateGrids();
 
 	PuzzleGrid rowGrid;
 	PuzzleGrid columnGrid;

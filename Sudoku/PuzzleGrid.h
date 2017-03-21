@@ -7,7 +7,7 @@ class PuzzleGrid
 public:
 	PuzzleGrid();
 	~PuzzleGrid();
-	//this is dumb. Really fucking dumb
+	//Is this the best way?
 	int GetCellGroupValues(const int groupPos, const int cellPos);
 	void EditValue(const int groupPos, const int cellPos, const int inVal);
 	Cell* GetCellRef(const int groupPos, const int cellPos);

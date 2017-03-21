@@ -1,0 +1,11 @@
+Work parameter passing?
+
+Getting values
+
+New Cell in creategrids and cellgroup -> might be sorted
+
+Splitting tasks up to make it look neater
+
+Print formatting -> might be sorted
+
+Cahnge the name of given to state?

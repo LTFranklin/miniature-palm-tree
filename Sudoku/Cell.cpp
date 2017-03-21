@@ -9,6 +9,7 @@ Cell::Cell()
 
 Cell::~Cell()
 {	
+	delete this;
 }
 
 void Cell::SetValue(const int inVal)
