@@ -25,7 +25,9 @@ private:
 	void PrintGrid(PuzzleGrid grid) const;
 	//should probably rename. Does the bulk of the solving (consider splitting into naked and hidden?)
 	bool Work(CellGroup group);
-	void CreateGrids();
+	void CreateGrids(const char filenameIn[]);
+	inline bool NakedSingles(CellGroup group);
+	inline bool HiddenSingles(CellGroup group);
 
 	PuzzleGrid rowGrid;
 	PuzzleGrid columnGrid;

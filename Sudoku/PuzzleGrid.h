@@ -8,11 +8,11 @@ public:
 	PuzzleGrid();
 	~PuzzleGrid();
 	//Is this the best way?
-	int GetCellGroupValues(const int groupPos, const int cellPos);
+	int GetCellGroupValues(const int groupPos, const int cellPos) const;
 	void EditValue(const int groupPos, const int cellPos, const int inVal);
-	Cell* GetCellRef(const int groupPos, const int cellPos);
+	Cell* GetCellRef(const int groupPos, const int cellPos) const;
 	void SetRef(const int groupPos, const int cellPos, Cell* ref);
-	CellGroup GetCellGroup(const int pos);
+	CellGroup GetCellGroup(const int pos) const;
 
 private:
 	//9 CellGroups together to form the board

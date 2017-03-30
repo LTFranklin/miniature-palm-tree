@@ -39,7 +39,7 @@ void Cell::SetValue(const int inVal)
 	}
 }
 
-int Cell::GetValue()
+int Cell::GetValue() const
 {
 	return value;
 }
@@ -49,7 +49,7 @@ void Cell::SetGiven(const bool inGiven)
 	given = inGiven;
 }
 
-bool Cell::GetGiven()
+bool Cell::GetGiven() const
 {
 	return given;
 }
@@ -67,7 +67,7 @@ void Cell::RemoveOption(const int inVal)
 	options.erase(std::remove(options.begin(), options.end(), inVal), options.end());
 }
 
-vector<int> Cell::GetOptions()
+vector<int> Cell::GetOptions() const
 {
 	return options;
 }

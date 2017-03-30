@@ -15,12 +15,12 @@ PuzzleGrid::~PuzzleGrid()
 	
 }
 
-CellGroup PuzzleGrid::GetCellGroup(const int pos)
+CellGroup PuzzleGrid::GetCellGroup(const int pos) const
 {
 	return grid[pos];
 }
 
-int PuzzleGrid::GetCellGroupValues(const int groupPos, const int cellPos)
+int PuzzleGrid::GetCellGroupValues(const int groupPos, const int cellPos) const
 {
 	return grid[groupPos].GetCellValue(cellPos);
 }
@@ -30,7 +30,7 @@ void PuzzleGrid::EditValue(const int groupPos, const int cellPos, const int inVa
 	grid[groupPos].EditValue(inVal, cellPos);
 }
 
-Cell* PuzzleGrid::GetCellRef(const int groupPos, const int cellPos)
+Cell* PuzzleGrid::GetCellRef(const int groupPos, const int cellPos) const
 {
 	return grid[groupPos].GetCellRef(cellPos);
 }

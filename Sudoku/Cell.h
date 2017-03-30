@@ -14,11 +14,11 @@ public:
 	//sets the cells value (should only be used once ideally)
 	void SetValue(const int inVal);
 	//get the cells value for printing
-	int GetValue();
+	int GetValue() const;
 	//gets how the value was found (true = provided, false = deduced)
-	bool GetGiven();
+	bool GetGiven() const;
 	//get the cells possible values
-	vector<int> GetOptions();
+	vector<int> GetOptions() const;
 	void RemoveOption(const int inVal);
 
 private:

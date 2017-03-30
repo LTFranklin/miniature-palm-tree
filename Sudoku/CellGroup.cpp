@@ -14,7 +14,7 @@ CellGroup::~CellGroup()
 }
 
 //look at removing needing the pos parameter if possible
-int CellGroup::GetCellValue(const int pos)
+int CellGroup::GetCellValue(const int pos) const
 {
 	return group[pos]->GetValue();
 }
@@ -24,7 +24,7 @@ void CellGroup::EditValue(const int inVal, const int pos)
 	group[pos]->SetValue(inVal);
 }
 
-Cell* CellGroup::GetCellRef(const int pos)
+Cell* CellGroup::GetCellRef(const int pos) const
 {
 	return group[pos];
 }
@@ -40,12 +40,12 @@ void CellGroup::RemoveOption(const int pos, const int inVal)
 	group[pos]->RemoveOption(inVal);
 }
 
-bool CellGroup::GetGiven(const int pos)
+bool CellGroup::GetGiven(const int pos) const
 {
 	return group[pos]->GetGiven();
 }
 
-vector<int> CellGroup::GetOptions(const int pos)
+vector<int> CellGroup::GetOptions(const int pos) const
 {
 	return group[pos]->GetOptions();
 }
