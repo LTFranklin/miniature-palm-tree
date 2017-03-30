@@ -117,19 +117,6 @@ void SudokuPuzzle::CreateGrids(const char filenameIn[])
 
 bool SudokuPuzzle::Work(CellGroup group)
 {
-	//Call naked and hidden singles, if changes and retrun true or false depending if changes have been made
-
-	if (NakedSingles(group) || HiddenSingles(group))
-	{
-		return true;
-	}
-
-	return false;
-}
-
-bool SudokuPuzzle::NakedSingles(CellGroup group)
-{
-	bool changesMade = false;
 	//create a vector containing all the known values in the group
 	vector<int> values;
 	for (int i = 0; i < 9; ++i)
@@ -139,13 +126,26 @@ bool SudokuPuzzle::NakedSingles(CellGroup group)
 			values.push_back(group.GetCellValue(i));
 		}
 	}
-	//if there is 9 values, the gorup is solved so ther is no need to do anything
+	//if there is 9 values, the gorup is solved so there is no need to do anything
 	if (values.size() == 9)
 	{
 		//cleaning up?
 		values.clear();
 		return false;
 	}
+	values.clear();
+	//Call naked and hidden singles, if changes and retrun true or false depending if changes have been made
+	if (NakedSingles(group, values) || HiddenSingles(group))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool SudokuPuzzle::NakedSingles(CellGroup group, vector<int> values)
+{
+	bool changesMade = false;
 	//for every value in the group
 	for (int i = 0; i < 9; ++i)
 	{
@@ -167,8 +167,6 @@ bool SudokuPuzzle::NakedSingles(CellGroup group)
 			changesMade = true;
 		}
 	}
-	//cleaning up?
-	values.clear();
 	return changesMade;
 }
 

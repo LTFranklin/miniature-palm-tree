@@ -26,7 +26,7 @@ private:
 	//should probably rename. Does the bulk of the solving (consider splitting into naked and hidden?)
 	bool Work(CellGroup group);
 	void CreateGrids(const char filenameIn[]);
-	inline bool NakedSingles(CellGroup group);
+	inline bool NakedSingles(CellGroup group, vector<int> values);
 	inline bool HiddenSingles(CellGroup group);
 
 	PuzzleGrid rowGrid;

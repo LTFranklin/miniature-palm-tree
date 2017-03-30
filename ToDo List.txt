@@ -1,11 +1,8 @@
-Work parameter passing?
+Work parameter passing? - needs to be by reference
 
 Getting values
 
-New Cell in creategrids and cellgroup -> might be sorted
-
 Splitting tasks up to make it look neater
 
-Print formatting -> might be sorted
+Change the name of given to state?
 
-Cahnge the name of given to state?
