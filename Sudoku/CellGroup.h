@@ -9,13 +9,14 @@ public:
 	~CellGroup();
 	int GetCellValue(const int pos) const;
 	void EditValue(const int inVal, const int pos);
-	Cell* GetCellRef(const int pos) const;
+	Cell *GetCellRef(const int pos) const;
 	void SetRef(const int pos, Cell* ref);
 	void RemoveOption(const int pos, const int inVal);
 	bool GetGiven(const int pos) const;
 	vector<int> GetOptions(const int pos) const;
+	Cell *group[9];
 
 private:
-	Cell* group[9];
+
 };
 

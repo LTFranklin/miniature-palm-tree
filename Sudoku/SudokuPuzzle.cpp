@@ -22,30 +22,34 @@ void SudokuPuzzle::Solve(char filenameIn[])
 
 	//used to check if changes have been made
 	bool rChange,cChange,bChange = true;
+	int counter = 0;
 	//loops while changes have been made. If a loop occurs with no changes, nothing further can be done
 	do
 	{
 		for (int i = 0; i < 9; ++i)
 		{
-			rChange = Work(rowGrid.GetCellGroup(i));
+			rChange = Work(&rowGrid[i]);
 		}
 		for (int i = 0; i < 9; ++i)
 		{
-			cChange = Work(columnGrid.GetCellGroup(i));
+			cChange = Work(&columnGrid[i]);
 		}
 		for (int i = 0; i < 9; ++i)
 		{
-			bChange = Work(blockGrid.GetCellGroup(i));
+			bChange = Work(&blockGrid[i]);
 		}
+		++counter;
 	} while (rChange || cChange || bChange);
 	
 	QueryPerformanceCounter(&end);
 	float time = (end.QuadPart - start.QuadPart) / (static_cast<float> (frequency.QuadPart));
 
-	PrintGrid(rowGrid);
-	cout << "\n";
-
-	Output(rowGrid);  // Output the solved puzzle
+	for (int i = 0; i < 9; ++i)
+	{
+		PrintGrid(rowGrid[i]);
+	}
+	Output();
+	cout << time;
 }
 
 //comment out before submission
@@ -63,35 +67,13 @@ void SudokuPuzzle::CreateGrids(const char filenameIn[])
 			//creates a base cell with a zero value
 			Cell* madeCell = new Cell;
 			//and sets the reference in their respective positions within the row and column grids 
-			rowGrid.SetRef(i, j, madeCell);
-			columnGrid.SetRef(j, i, madeCell);
+			rowGrid[i].SetRef(j, madeCell);
+			columnGrid[j].SetRef(i, madeCell);
 
-			//every 3 values belong in different rows in both directions. variable i is used to set the base value of x, and j is used to adjust it in increments of three 
-			if (i < 3)
-			{
-				x = 0;
-			}
-			else if (3 <= i && i < 6)
-			{
-				x = 1;
-			}
-			else if (6 <= i)
-			{
-				x = 2;
-			}
-			if (j < 3)
-			{
-				x += 0;
-			}
-			else if (3 <= j && j < 6)
-			{
-				x += 3;
-			}
-			else if (6 <= j)
-			{
-				x += 6;
-			}
-			blockGrid.SetRef(x, y, madeCell);
+			//every 3 values belong in different rows
+			x = i / 3 + ((j/3) * 3);
+
+			blockGrid[x].SetRef(y, madeCell);
 			y++;
 			//this resets the y values when it reaches the end of a row of grids
 			if (y == 9 && x == 6 || y == 9 && x == 7)
@@ -108,22 +90,24 @@ void SudokuPuzzle::CreateGrids(const char filenameIn[])
 			int val;
 			streamReader >> val;
 			//which is used to apply it to the rowgrid grid
-			rowGrid.EditValue(i, j, val);
+			rowGrid[i].EditValue(val, j);
 			//as they all share the same references it isnt required read it into every grid
 
 		}
 	}
 }
 
-bool SudokuPuzzle::Work(CellGroup group)
+bool SudokuPuzzle::Work(CellGroup* activeGroup)
 {
 	//create a vector containing all the known values in the group
 	vector<int> values;
 	for (int i = 0; i < 9; ++i)
 	{
-		if (group.GetCellValue(i) != 0)
+
+		//use an int?
+		if (activeGroup->group[i]->GetValue() != 0)
 		{
-			values.push_back(group.GetCellValue(i));
+			values.push_back(activeGroup->group[i]->GetValue());
 		}
 	}
 	//if there is 9 values, the gorup is solved so there is no need to do anything
@@ -133,51 +117,65 @@ bool SudokuPuzzle::Work(CellGroup group)
 		values.clear();
 		return false;
 	}
-	values.clear();
+
 	//Call naked and hidden singles, if changes and retrun true or false depending if changes have been made
-	if (NakedSingles(group, values) || HiddenSingles(group))
+	if (NarrowOptions(activeGroup, values) || NakedSingles(activeGroup, values) || HiddenSingles(activeGroup))
 	{
 		return true;
 	}
-
 	return false;
 }
 
-bool SudokuPuzzle::NakedSingles(CellGroup group, vector<int> values)
+bool SudokuPuzzle::NarrowOptions(CellGroup* groupX, vector<int> values)
 {
-	bool changesMade = false;
+	bool changes = false;
 	//for every value in the group
 	for (int i = 0; i < 9; ++i)
 	{
 		//do nothing if it is given
-		if (group.GetGiven(i))
+		if (groupX->group[i]->GetGiven())
 		{
 			continue;
 		}
+		vector<int> v = groupX->group[i]->GetOptions();
 		//and remove all the known values form the cells possibilities
 		for (int j = 0; j < values.size(); ++j)
 		{
-			group.RemoveOption(i, values[j]);
+			if (std::find(v.begin(),v.end(), values[j]) != v.end())
+			{
+				groupX->group[i]->RemoveOption(values[j]);
+				changes = true;
+			}
 		}
+		v.clear();
+	}
+	return changes;
+}
+
+bool SudokuPuzzle::NakedSingles(CellGroup* groupX, vector<int> values)
+{
+	bool changesMade = false;
+	for (int i = 0; i < 9; ++i)
+	{
 		//if there is only one option, assign it as the value and state a change has been made
-		if (group.GetOptions(i).size() == 1)
+		if (groupX->group[i]->GetOptions().size() == 1)
 		{
-			group.EditValue(group.GetOptions(i)[0], i);
-			values.push_back(group.GetCellValue(i));
+			groupX->group[i]->SetValue(groupX->group[i]->GetOptions()[0]);
+			values.push_back(groupX->group[i]->GetValue());
 			changesMade = true;
 		}
 	}
 	return changesMade;
 }
 
-bool SudokuPuzzle::HiddenSingles(CellGroup group)
+bool SudokuPuzzle::HiddenSingles(CellGroup* group)
 {
 	bool changesMade = false;
 	//for each group member
 	for (int i = 0; i < 9; ++i)
 	{
 		//if it hasnt been solved
-		if (group.GetCellValue(i) == 0)
+		if (group->group[i]->GetValue() == 0)
 		{
 			vector <int> possibilities;
 			//for each other group member
@@ -186,13 +184,13 @@ bool SudokuPuzzle::HiddenSingles(CellGroup group)
 				if (i != j)
 				{
 					//for every option
-					for (int k = 0; k < group.GetOptions(j).size(); ++k)
+					for (int k = 0; k < group->group[j]->GetOptions().size(); ++k)
 					{
 						//if the option isnt already known
-						if (std::find(possibilities.begin(), possibilities.end(), group.GetOptions(j)[k]) == possibilities.end())
+						if (possibilities.capacity() == 0 || std::find(possibilities.begin(), possibilities.end(), group->group[j]->GetOptions()[k]) == possibilities.end())
 						{
 							//add it to the list
-							possibilities.push_back(group.GetOptions(j)[k]);
+							possibilities.push_back(group->group[j]->GetOptions()[k]);
 						}
 					}
 				}
@@ -202,37 +200,38 @@ bool SudokuPuzzle::HiddenSingles(CellGroup group)
 				}
 			}
 			//for every option
-			for (int j = 0; j < group.GetOptions(i).size(); ++j)
+			for (int j = 0; j < group->group[i]->GetOptions().size(); ++j)
 			{
 				//if that value isnt an option for another square
-				if ((std::find(possibilities.begin(), possibilities.end(), group.GetOptions(i)[j]) == possibilities.end()))
+				if ((std::find(possibilities.begin(), possibilities.end(), group->group[i]->GetOptions()[j]) == possibilities.end()))
 				{
-					group.EditValue(group.GetOptions(i)[j], i);
+					//set that option as the cells value
+					group->group[i]->SetValue(group->group[i]->GetOptions()[j]);
 					changesMade = true;
 					continue;
 				}
 			}
+			possibilities.clear();
 		}
 	}
 	return changesMade;
 }
 
-void SudokuPuzzle::PrintGrid(PuzzleGrid grid) const
+//remove before submission
+void SudokuPuzzle::PrintGrid(CellGroup row) const
 {
 	//used for testing purposes
 	for (int i = 0; i < 9; ++i)
 	{
-		for (int j = 0; j < 9; ++j)
-		{
-			cout << " " << grid.GetCellGroupValues(i, j) << " ";
-		}
-		cout << "\n" << "\n";
+		cout << " " << row.GetCellValue(i) << " ";
 	}
+	cout << "\n" << "\n";
+
 }
 
 
 // This is an example of how you may output the solved puzzle
-void SudokuPuzzle::Output(PuzzleGrid grid) const
+void SudokuPuzzle::Output() const
 {
 	ofstream fout("sudoku_solution.txt"); // DO NOT CHANGE THE NAME OF THIS FILE
 	if(fout.is_open())
@@ -241,10 +240,11 @@ void SudokuPuzzle::Output(PuzzleGrid grid) const
 		{
 			for (int j = 0; j < 9; ++j)
 			{
-				fout << grid.GetCellGroupValues(i, j) << " ";
+				fout << rowGrid[i].GetCellValue(j) << " ";
 			}
 			fout << "\n";
 		}
-		fout.close();
+
 	}
+	fout.close();
 }

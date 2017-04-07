@@ -21,16 +21,17 @@ public:
 
 
 private:
-	void Output(PuzzleGrid grid) const;
-	void PrintGrid(PuzzleGrid grid) const;
+	void Output() const;
+	void PrintGrid(CellGroup row) const;
 	//should probably rename. Does the bulk of the solving (consider splitting into naked and hidden?)
-	bool Work(CellGroup group);
-	void CreateGrids(const char filenameIn[]);
-	inline bool NakedSingles(CellGroup group, vector<int> values);
-	inline bool HiddenSingles(CellGroup group);
+	inline bool Work(CellGroup* activeGroup);
+	inline void CreateGrids(const char filenameIn[]);
+	inline bool NakedSingles(CellGroup* groupX, vector<int> values);
+	inline bool HiddenSingles(CellGroup* group);
+	inline bool NarrowOptions(CellGroup* groupX, vector<int> values);
 
-	PuzzleGrid rowGrid;
-	PuzzleGrid columnGrid;
-	PuzzleGrid blockGrid;
+	CellGroup rowGrid[9];
+	CellGroup columnGrid[9];
+	CellGroup blockGrid[9];
 };
 
