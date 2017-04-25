@@ -18,8 +18,9 @@ public:
 	//gets how the value was found (true = provided, false = deduced)
 	bool GetGiven() const;
 	//get the cells possible values
-	vector<int> GetOptions() const;
+	int GetOptions(const int i) const;
 	void RemoveOption(const int inVal);
+	int GetOptionNum() const;
 
 private:
 	//value of the cell

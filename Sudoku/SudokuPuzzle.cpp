@@ -28,20 +28,20 @@ void SudokuPuzzle::Solve(char filenameIn[])
 	{
 		for (int i = 0; i < 9; ++i)
 		{
-			rChange = Work(&rowGrid[i]);
+			rChange = Work(rowGrid[i]);
 		}
 		for (int i = 0; i < 9; ++i)
 		{
-			cChange = Work(&columnGrid[i]);
+			cChange = Work(columnGrid[i]);
 		}
 		for (int i = 0; i < 9; ++i)
 		{
-			bChange = Work(&blockGrid[i]);
+			bChange = Work(blockGrid[i]);
 		}
 		++counter;
 	} while (rChange || cChange || bChange);
-	
-	QueryPerformanceCounter(&end);
+	 
+	QueryPerformanceCounter(&end);    
 	float time = (end.QuadPart - start.QuadPart) / (static_cast<float> (frequency.QuadPart));
 
 	for (int i = 0; i < 9; ++i)
@@ -49,7 +49,7 @@ void SudokuPuzzle::Solve(char filenameIn[])
 		PrintGrid(rowGrid[i]);
 	}
 	Output();
-	cout << time;
+	cout << time << "\n" << counter;
 }
 
 //comment out before submission
@@ -90,24 +90,25 @@ void SudokuPuzzle::CreateGrids(const char filenameIn[])
 			int val;
 			streamReader >> val;
 			//which is used to apply it to the rowgrid grid
-			rowGrid[i].EditValue(val, j);
+			rowGrid[i].EditValue(j, val);
 			//as they all share the same references it isnt required read it into every grid
 
 		}
 	}
 }
 
-bool SudokuPuzzle::Work(CellGroup* activeGroup)
+bool SudokuPuzzle::Work(CellGroup activeGroup)
 {
 	//create a vector containing all the known values in the group
 	vector<int> values;
+	int val;
 	for (int i = 0; i < 9; ++i)
 	{
-
 		//use an int?
-		if (activeGroup->group[i]->GetValue() != 0)
+		val = activeGroup.GetCellValue(i);
+		if (val != 0)
 		{
-			values.push_back(activeGroup->group[i]->GetValue());
+			values.push_back(val);
 		}
 	}
 	//if there is 9 values, the gorup is solved so there is no need to do anything
@@ -117,7 +118,6 @@ bool SudokuPuzzle::Work(CellGroup* activeGroup)
 		values.clear();
 		return false;
 	}
-
 	//Call naked and hidden singles, if changes and retrun true or false depending if changes have been made
 	if (NarrowOptions(activeGroup, values) || NakedSingles(activeGroup, values) || HiddenSingles(activeGroup))
 	{
@@ -126,24 +126,28 @@ bool SudokuPuzzle::Work(CellGroup* activeGroup)
 	return false;
 }
 
-bool SudokuPuzzle::NarrowOptions(CellGroup* groupX, vector<int> values)
+bool SudokuPuzzle::NarrowOptions(CellGroup activeGroup, vector<int> values)
 {
 	bool changes = false;
 	//for every value in the group
 	for (int i = 0; i < 9; ++i)
 	{
 		//do nothing if it is given
-		if (groupX->group[i]->GetGiven())
+		if (activeGroup.GetGiven(i))
 		{
 			continue;
 		}
-		vector<int> v = groupX->group[i]->GetOptions();
+		vector<int> v;
+		for (int k = 0; k < activeGroup.GetOptionNum(i); ++k)
+		{
+			v.push_back(activeGroup.GetOptions(i, k));
+		}
 		//and remove all the known values form the cells possibilities
 		for (int j = 0; j < values.size(); ++j)
 		{
 			if (std::find(v.begin(),v.end(), values[j]) != v.end())
 			{
-				groupX->group[i]->RemoveOption(values[j]);
+				activeGroup.RemoveOption(i, values[j]);
 				changes = true;
 			}
 		}
@@ -152,30 +156,30 @@ bool SudokuPuzzle::NarrowOptions(CellGroup* groupX, vector<int> values)
 	return changes;
 }
 
-bool SudokuPuzzle::NakedSingles(CellGroup* groupX, vector<int> values)
+bool SudokuPuzzle::NakedSingles(CellGroup activeGroup, vector<int> values)
 {
 	bool changesMade = false;
 	for (int i = 0; i < 9; ++i)
 	{
 		//if there is only one option, assign it as the value and state a change has been made
-		if (groupX->group[i]->GetOptions().size() == 1)
+		if (activeGroup.GetOptionNum(i) == 1)
 		{
-			groupX->group[i]->SetValue(groupX->group[i]->GetOptions()[0]);
-			values.push_back(groupX->group[i]->GetValue());
+			activeGroup.EditValue(i, activeGroup.GetOptions(i, 0));
+			values.push_back(activeGroup.GetCellValue(i));
 			changesMade = true;
 		}
 	}
 	return changesMade;
 }
 
-bool SudokuPuzzle::HiddenSingles(CellGroup* group)
+bool SudokuPuzzle::HiddenSingles(CellGroup activeGroup)
 {
 	bool changesMade = false;
 	//for each group member
 	for (int i = 0; i < 9; ++i)
 	{
 		//if it hasnt been solved
-		if (group->group[i]->GetValue() == 0)
+		if (activeGroup.GetCellValue(i) == 0)
 		{
 			vector <int> possibilities;
 			//for each other group member
@@ -184,13 +188,14 @@ bool SudokuPuzzle::HiddenSingles(CellGroup* group)
 				if (i != j)
 				{
 					//for every option
-					for (int k = 0; k < group->group[j]->GetOptions().size(); ++k)
+					
+					for (int k = 0; k < activeGroup.GetOptionNum(j); ++k)
 					{
 						//if the option isnt already known
-						if (possibilities.capacity() == 0 || std::find(possibilities.begin(), possibilities.end(), group->group[j]->GetOptions()[k]) == possibilities.end())
+						if (possibilities.capacity() == 0 || std::find(possibilities.begin(), possibilities.end(), activeGroup.GetOptions(j, k)) == possibilities.end())
 						{
 							//add it to the list
-							possibilities.push_back(group->group[j]->GetOptions()[k]);
+							possibilities.push_back(activeGroup.GetOptions(j, k));
 						}
 					}
 				}
@@ -200,13 +205,13 @@ bool SudokuPuzzle::HiddenSingles(CellGroup* group)
 				}
 			}
 			//for every option
-			for (int j = 0; j < group->group[i]->GetOptions().size(); ++j)
+			for (int j = 0; j < activeGroup.GetOptionNum(i); ++j)
 			{
 				//if that value isnt an option for another square
-				if ((std::find(possibilities.begin(), possibilities.end(), group->group[i]->GetOptions()[j]) == possibilities.end()))
+				if ((std::find(possibilities.begin(), possibilities.end(), activeGroup.GetOptions(i, j)) == possibilities.end()))
 				{
 					//set that option as the cells value
-					group->group[i]->SetValue(group->group[i]->GetOptions()[j]);
+					activeGroup.EditValue(i, activeGroup.GetOptions(i, j));
 					changesMade = true;
 					continue;
 				}
@@ -228,7 +233,6 @@ void SudokuPuzzle::PrintGrid(CellGroup row) const
 	cout << "\n" << "\n";
 
 }
-
 
 // This is an example of how you may output the solved puzzle
 void SudokuPuzzle::Output() const

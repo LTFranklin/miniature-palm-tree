@@ -8,15 +8,18 @@ public:
 	CellGroup();
 	~CellGroup();
 	int GetCellValue(const int pos) const;
-	void EditValue(const int inVal, const int pos);
+	void EditValue(const int pos, const int inVal);
 	Cell *GetCellRef(const int pos) const;
 	void SetRef(const int pos, Cell* ref);
 	void RemoveOption(const int pos, const int inVal);
 	bool GetGiven(const int pos) const;
-	vector<int> GetOptions(const int pos) const;
-	Cell *group[9];
+	int GetOptions(const int gPos, const int oPos) const;
+	int GetOptionNum(const int pos) const;
+
+	Cell* GetGroup();
+
 
 private:
-
+	Cell *group[9];
 };
 

@@ -19,7 +19,7 @@ int CellGroup::GetCellValue(const int pos) const
 	return group[pos]->GetValue();
 }
 
-void CellGroup::EditValue(const int inVal, const int pos)
+void CellGroup::EditValue(const int pos, const int inVal)
 {
 	group[pos]->SetValue(inVal);
 }
@@ -45,7 +45,17 @@ bool CellGroup::GetGiven(const int pos) const
 	return group[pos]->GetGiven();
 }
 
-vector<int> CellGroup::GetOptions(const int pos) const
+int CellGroup::GetOptions(const int gPos, const int oPos) const
 {
-	return group[pos]->GetOptions();
+	return group[gPos]->GetOptions(oPos);
+}
+
+int CellGroup::GetOptionNum(const int pos) const
+{
+	return group[pos]->GetOptionNum();
+}
+
+Cell* CellGroup::GetGroup()
+{
+	return group[0];
 }

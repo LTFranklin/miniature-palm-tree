@@ -20,12 +20,12 @@ void Cell::SetValue(const int inVal)
 		throw exception("Editing a given value");
 	}
 	//used for error checking (should be removed) incase a value too high/low is given by mistake
-	else if (0 > inVal > 9)
+	if (0 > inVal > 9)
 	{
 		throw exception("Invalid value: " + inVal);
 	}
 	//the value should only get set to 0 when being intialised, so if the handed to it is 0 it can be changed
-	else if (inVal == 0)
+	if (inVal == 0)
 	{
 		SetGiven(false);
 		value = inVal;		
@@ -67,7 +67,20 @@ void Cell::RemoveOption(const int inVal)
 	options.erase(std::remove(options.begin(), options.end(), inVal), options.end());
 }
 
-vector<int> Cell::GetOptions() const
+int Cell::GetOptions(const int i) const
 {
-	return options;
+	if (i < options.size())
+	{
+		return options[i];
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+
+int Cell::GetOptionNum() const
+{
+	return options.size();
 }

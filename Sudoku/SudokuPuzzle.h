@@ -5,7 +5,6 @@
 #include <sstream>
 #include "Cell.h"
 #include "CellGroup.h"
-#include "PuzzleGrid.h"
 
 using namespace std;
 
@@ -24,11 +23,11 @@ private:
 	void Output() const;
 	void PrintGrid(CellGroup row) const;
 	//should probably rename. Does the bulk of the solving (consider splitting into naked and hidden?)
-	inline bool Work(CellGroup* activeGroup);
+	inline bool Work(CellGroup activeGroup);
 	inline void CreateGrids(const char filenameIn[]);
-	inline bool NakedSingles(CellGroup* groupX, vector<int> values);
-	inline bool HiddenSingles(CellGroup* group);
-	inline bool NarrowOptions(CellGroup* groupX, vector<int> values);
+	inline bool NakedSingles(CellGroup activeGroup, vector<int> values);
+	inline bool HiddenSingles(CellGroup activeGroup);
+	inline bool NarrowOptions(CellGroup activeGroup, vector<int> values);
 
 	CellGroup rowGrid[9];
 	CellGroup columnGrid[9];
